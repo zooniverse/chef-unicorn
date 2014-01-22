@@ -1,0 +1,8 @@
+check process <%= @name %> with pidfile /var/run/unicorn.<%= @name %>.pid
+  start program "/etc/init.d/<%= @name %> upgrade" with timeout <%= @environment['rails_env'] == 'production' ? '180' : '300' %> seconds
+  stop program "/etc/init.d/<%= @name %> stop"
+  if failed unixsocket /tmp/<%= @name %> protocol http<%= ' for 30 cycles' if @environment['rails_env'] == 'staging' %> for 3 times within 5 cycles then restart
+  if totalmem is greater than <%= (0.8 * @max_memory).round %> MB for 10 cycles then alert
+  if totalmem is greater than <%= @max_memory %> MB for 5 cycles then restart
+  alert <%= node[:monit][:alert_email] %> but not on { connection, exec, ppid, pid, nonexist }
+  depends on nginx

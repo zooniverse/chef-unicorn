@@ -1,0 +1,11 @@
+worker_processes <%= @workers %>
+working_directory '<%= @app_path %>'
+listen '/tmp/<%= @name %>', :backlog => 64
+preload_app true
+timeout <%= @timeout %>
+
+user 'www-data', 'www-data'
+pid '<%= @pid_path %>'
+
+stderr_path '<%= @app_path %>/log/unicorn.stderr.log'
+

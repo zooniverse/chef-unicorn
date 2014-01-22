@@ -1,0 +1,63 @@
+#!/bin/sh
+set -e
+
+TIMEOUT=60
+
+APP_ROOT=<%= @app_path %>
+PID=<%= @pid_path %>
+CMD="bundle exec /usr/local/bin/unicorn_rails -D -c <%= @config_path %> -E <%= @environment['rails_env'] %>"
+action="$1"
+
+set -u
+
+old_pid="$PID.oldbin"
+
+cd $APP_ROOT || exit 1
+
+sig () {
+	test -s "$PID" && kill -$1 `cat $PID`
+}
+
+oldsig () {
+	test -s $old_pid && kill -$1 `cat $old_pid`
+}
+
+workersig () {
+	worker_pid="<%= @pid_path.sub(/\.pid$/, '.$2.pid') %>"
+	test -s $worker_pid && kill -$1 `cat $worker_pid`
+}
+
+case $action in
+start)
+	sig 0 && echo >&2 "Already running" && exit 0
+	$CMD
+	;;
+stop)
+	sig QUIT && exit 0
+	echo >&2 "Not running"
+	;;
+force-stop)
+	sig TERM && exit 0
+	echo >&2 "Not running"
+	;;
+restart|reload)
+	sig HUP && echo 'reloaded OK' && exit 0
+	echo >&2 "Couldn't reload, starting '$CMD' instead"
+	$CMD
+	;;
+upgrade)
+	sig 0 && sig USR2 && exit 0
+	$CMD
+	;;
+kill-worker)
+	workersig QUIT $2 && exit 0
+	echo >&2 "Worker not running"
+	;;
+reopen-logs)
+	sig USR1
+	;;
+*)
+	echo >&2 "Usage: $0 <start|stop|restart|upgrade|force-stop|kill-worker|reopen-logs> [worker-pid]"
+	exit 1
+	;;
+esac
