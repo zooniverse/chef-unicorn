@@ -4,11 +4,10 @@ listen '/tmp/<%= @name %>', :backlog => 64
 preload_app true
 timeout <%= @timeout %>
 
-user '<%= user %>', '<%= group %>'
+user '<%= @user %>', '<%= @group %>'
 pid '<%= @pid_path %>'
 
 stderr_path '<%= @app_path %>/log/unicorn.stderr.log'
-
 
 before_fork do |server, worker|
   old_pid = '<%= @pid_path %>.oldbin'

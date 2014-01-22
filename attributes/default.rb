@@ -8,4 +8,4 @@ default['unicorn']['site']['timeout'] = 'default'
 default['unicorn']['site']['max_memory'] = 'default'
 default['unicorn']['site']['config_path'] = "/usr/local/unicorn/#{ node['unicorn']['site']['name'] }.rb"
 default['unicorn']['site']['config'] = 'default'
-default['unicorn']['site']['app_path'] = "/rails/apps/#{ node['unicorn']['site']['name'] } /current"
+default['unicorn']['site']['app_path'] = "/rails/apps/#{ node['unicorn']['site']['name'] }/current"
