@@ -5,7 +5,7 @@ TIMEOUT=60
 
 APP_ROOT=<%= @app_path %>
 PID=<%= @pid_path %>
-CMD="bundle exec /usr/local/bin/unicorn_rails -D -c <%= @config_path %> -E <%= @environment %>"
+CMD="bundle exec /usr/local/rbenv/shims/unicorn_rails -D -c <%= @config_path %> -E <%= @environment %>"
 action="$1"
 
 set -u
