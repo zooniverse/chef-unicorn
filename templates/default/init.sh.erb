@@ -5,7 +5,7 @@ TIMEOUT=60
 
 APP_ROOT=<%= @app_path %>
 PID=<%= @pid_path %>
-CMD="bundle exec /usr/local/rbenv/shims/unicorn_rails -D -c <%= @config_path %> -E <%= @environment %>"
+CMD="bundle exec unicorn_rails -D -c <%= @config_path %> -E <%= @environment %>"
 action="$1"
 
 set -u
@@ -29,7 +29,8 @@ workersig () {
 
 case $action in
 start)
-	sig 0 && echo >&2 "Already running" && exit 0
+  sig 0 && echo >&2 "Already running" && exit 0
+  cd $APP_ROOT
 	$CMD
 	;;
 stop)
@@ -43,10 +44,12 @@ force-stop)
 restart|reload)
 	sig HUP && echo 'reloaded OK' && exit 0
 	echo >&2 "Couldn't reload, starting '$CMD' instead"
+  cd $APP_ROOT
 	$CMD
 	;;
 upgrade)
 	sig 0 && sig USR2 && exit 0
+  cd $APP_ROOT
 	$CMD
 	;;
 kill-worker)
